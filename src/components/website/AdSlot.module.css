@@ -1,0 +1,67 @@
+/* ═══════════════════════════════════════════════════════
+   AdSlot Component Styles
+   ═══════════════════════════════════════════════════════ */
+
+.adSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 90px;
+  transition: opacity var(--transition-base);
+}
+
+/* Dev placeholder style */
+.placeholder {
+  background: var(--color-bg-tertiary);
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Slot size variants */
+.leaderboard {
+  width: 100%;
+  max-width: 728px;
+  min-height: 90px;
+  margin-inline: auto;
+}
+
+.rectangle {
+  width: 100%;
+  max-width: 300px;
+  min-height: 250px;
+}
+
+.inFeed {
+  width: 100%;
+  min-height: 120px;
+  grid-column: 1 / -1;
+}
+
+.inArticle {
+  width: 100%;
+  min-height: 200px;
+  margin: var(--space-6) 0;
+}
+
+.sticky {
+  width: 100%;
+  max-width: 300px;
+  min-height: 600px;
+}
+
+/* Responsive: hide leaderboard on mobile, show rectangle instead */
+@media (max-width: 767px) {
+  .leaderboard {
+    max-width: 100%;
+    min-height: 50px;
+  }
+
+  .sticky {
+    display: none;
+  }
+}

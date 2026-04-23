@@ -1,0 +1,105 @@
+// Prisom — Database Schema
+// PostgreSQL + Prisma ORM
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Admin ──────────────────────────────────────────
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+// ─── Category ───────────────────────────────────────
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  articles  Article[]
+  createdAt DateTime  @default(now())
+}
+
+// ─── Article ────────────────────────────────────────
+
+model Article {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  excerpt         String
+  content         String
+  originalTitle   String
+  originalUrl     String   @unique
+  sourceHash      String   @unique
+
+  // SEO
+  metaTitle       String
+  metaDescription String
+  keywords        String[]
+
+  // Media
+  thumbnailUrl    String?
+
+  // Category
+  category        Category @relation(fields: [categoryId], references: [id])
+  categoryId      String
+
+  // Status
+  status          ArticleStatus @default(PUBLISHED)
+  publishedAt     DateTime      @default(now())
+
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([publishedAt(sort: Desc)])
+  @@index([categoryId])
+  @@index([slug])
+  @@index([status])
+}
+
+// ─── Scrape Log ─────────────────────────────────────
+
+model ScrapeLog {
+  id                String       @id @default(cuid())
+  status            ScrapeStatus
+  articlesFound     Int          @default(0)
+  articlesAdded     Int          @default(0)
+  duplicatesSkipped Int          @default(0)
+  errorMessage      String?
+  duration          Int
+  createdAt         DateTime     @default(now())
+
+  @@index([createdAt(sort: Desc)])
+}
+
+// ─── Site Settings ──────────────────────────────────
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+// ─── Enums ──────────────────────────────────────────
+
+enum ArticleStatus {
+  PUBLISHED
+  DRAFT
+  ARCHIVED
+}
+
+enum ScrapeStatus {
+  SUCCESS
+  PARTIAL
+  FAILED
+}

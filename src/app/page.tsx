@@ -1,95 +1,87 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { prisma } from "@/lib/db";
+import { ARTICLES_PER_PAGE, SITE_URL } from "@/lib/constants";
+import { generateWebsiteJsonLd, generateBreadcrumbJsonLd } from "@/lib/seo";
+import type { Metadata } from "next";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+import Header from "@/components/website/Header";
+import Footer from "@/components/website/Footer";
+import CategoryBar from "@/components/website/CategoryBar";
+import ArticleGrid from "@/components/website/ArticleGrid";
+import AdSlot from "@/components/website/AdSlot";
+import styles from "./home.module.css";
+import type { ArticleWithCategory } from "@/types";
+
+/* ─── Page Metadata ──────────────────────── */
+export const metadata: Metadata = {
+  alternates: {
+    canonical: SITE_URL,
+  },
+};
+
+export default async function HomePage() {
+  const [articles, totalCount] = await Promise.all([
+    prisma.article.findMany({
+      where: { status: "PUBLISHED" },
+      include: { category: true },
+      orderBy: { publishedAt: "desc" },
+      take: ARTICLES_PER_PAGE,
+    }),
+    prisma.article.count({ where: { status: "PUBLISHED" } }),
+  ]);
+
+  const websiteJsonLd = generateWebsiteJsonLd();
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: "Home", url: SITE_URL },
+  ]);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <>
+      <Header />
+      <main id="homepage">
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <div className={styles.heroInner}>
+            <h1 className={styles.heroTitle}>
+              <span className={styles.heroGradient}>Latest Tech News</span>
+              {" "}from India
+            </h1>
+            <p className={styles.heroSubtitle}>
+              Your daily dose of tech — covering smartphones, AI, startups,
+              gadgets, apps, and gaming.
+            </p>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <div className={styles.mainContent}>
+          {/* Ad: Leaderboard */}
+          <div className={styles.adLeaderboard}>
+            <AdSlot slot="leaderboard" />
+          </div>
+
+          {/* Category Filter */}
+          <CategoryBar />
+
+          {/* Article Grid */}
+          <ArticleGrid
+            initialArticles={articles as ArticleWithCategory[]}
+            totalCount={totalCount}
+            pageSize={ARTICLES_PER_PAGE}
+          />
         </div>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <Footer />
+    </>
   );
 }
