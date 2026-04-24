@@ -112,15 +112,18 @@ export interface ScrapeResult {
   error?: string;
 }
 
+import { GoogleDecoder } from "google-news-url-decoder";
+
 /**
  * Scrape article content from a given URL.
  *
  * Strategy:
- * 1. Fetch the page HTML
- * 2. Remove non-article elements (nav, ads, footer, etc.)
- * 3. Try article-specific selectors to find the main content
- * 4. Fallback to <body> text extraction
- * 5. Clean and return the text
+ * 1. Decode Google News URL if necessary
+ * 2. Fetch the page HTML
+ * 3. Remove non-article elements (nav, ads, footer, etc.)
+ * 4. Try article-specific selectors to find the main content
+ * 5. Fallback to <body> text extraction
+ * 6. Clean and return the text
  *
  * @param url - The article URL to scrape
  * @returns ScrapeResult with article text content
@@ -129,8 +132,24 @@ export async function scrapeArticle(url: string): Promise<ScrapeResult> {
   log(`Scraping article: ${url}`);
 
   try {
+    let finalUrl = url;
+
+    // Decode Google News URLs to get the actual publisher link
+    if (url.includes("news.google.com/rss/articles/")) {
+      try {
+        const decoder = new GoogleDecoder();
+        const decoded = await decoder.decode(url);
+        if (decoded && decoded.status && decoded.decoded_url) {
+          finalUrl = decoded.decoded_url;
+          log(`Decoded Google News URL to: ${finalUrl}`);
+        }
+      } catch (decodeErr) {
+        log(`Failed to decode Google News URL, attempting raw URL anyway: ${decodeErr}`);
+      }
+    }
+
     // Fetch the page with timeout and browser-like headers
-    const response = await axios.get(url, {
+    const response = await axios.get(finalUrl, {
       timeout: 15000,
       maxRedirects: 5,
       headers: {
