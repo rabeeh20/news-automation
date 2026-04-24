@@ -60,7 +60,18 @@ export default function ArticleCard({ article, featured = false, index = 0 }: Ar
             loading={isPriority ? undefined : "lazy"}
           />
         ) : (
-          <div className={styles.thumbnailPlaceholder}>📰</div>
+          <Image
+            src={`https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80`}
+            alt="Technology News Placeholder"
+            fill
+            sizes={
+              featured
+                ? "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 66vw"
+                : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            }
+            className={styles.thumbnail}
+            loading="lazy"
+          />
         )}
         <Link
           href={`/category/${article.category.slug}`}
