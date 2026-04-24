@@ -71,6 +71,12 @@ log "🏗️ Building Next.js application..."
 npm run build || error "Build failed"
 success "Build complete"
 
+# ─── Step 5.5: Fix Nginx permissions ────────────────
+log "🔐 Fixing static file permissions for Nginx..."
+chmod 755 /home/ubuntu
+chmod -R 755 "$APP_DIR/.next/static/"
+success "Permissions fixed"
+
 # ─── Step 6: Restart PM2 processes ──────────────────
 log "🔄 Restarting PM2 processes..."
 
