@@ -112,7 +112,7 @@ export interface ScrapeResult {
   error?: string;
 }
 
-// @ts-expect-error
+// @ts-expect-error - google-news-url-decoder lacks type definitions
 import { GoogleDecoder } from "google-news-url-decoder";
 
 /**
