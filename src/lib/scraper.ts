@@ -112,6 +112,7 @@ export interface ScrapeResult {
   error?: string;
 }
 
+// @ts-ignore
 import { GoogleDecoder } from "google-news-url-decoder";
 
 /**
