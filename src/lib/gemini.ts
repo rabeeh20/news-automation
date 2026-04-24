@@ -21,7 +21,7 @@ export async function rewriteArticle(
 ): Promise<RewrittenArticle> {
   log(`Rewriting article: "${originalTitle}"`);
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const prompt = `You are a senior tech journalist writing for Prisom,
 a popular Indian tech news website.
@@ -86,7 +86,7 @@ export async function generateSEOMetadata(
 ): Promise<SEOMetadata> {
   log(`Generating SEO metadata for: "${title}"`);
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const prompt = `Generate SEO metadata as JSON:
 {
