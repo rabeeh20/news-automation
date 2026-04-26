@@ -3,11 +3,11 @@
    Smooth infinite scroll with optimised mobile layout
    ═══════════════════════════════════════════════════════ */
 
-/* Base: single column on mobile */
+/* Base: 2 columns on mobile */
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
 }
 
 /* ─── In-Feed Ad ───────────────────────── */
