@@ -9,7 +9,7 @@ import { prisma } from "../lib/db";
 import { fetchRSSFeed } from "../lib/rss";
 import { scrapeArticle } from "../lib/scraper";
 import { checkDuplicate, checkUrlExists, generateTitleHash } from "../lib/duplicate";
-import { rewriteArticle, generateSEOMetadata } from "../lib/gemini";
+import { rewriteArticle } from "../lib/gemini";
 import { generateThumbnail } from "../lib/image-gen";
 import {
   CRON_START_HOUR,
@@ -103,34 +103,31 @@ async function processArticle(item: {
       return false;
     }
 
-    // 4. Rewrite with Gemini AI
-    const rewritten = await rewriteArticle(scrapeResult.content, title);
+    // 4. Rewrite with Gemini AI (single call: article + SEO metadata)
+    const aiResult = await rewriteArticle(scrapeResult.content, title);
 
-    // 5. Generate SEO metadata
-    const seoMeta = await generateSEOMetadata(rewritten.title, rewritten.excerpt);
+    // 5. Get category-based thumbnail (no API call — static images)
+    const thumbnailUrl = await generateThumbnail(aiResult.title, aiResult.slug, aiResult.category);
 
-    // 6. Generate thumbnail image
-    const thumbnailUrl = await generateThumbnail(rewritten.title, seoMeta.slug);
+    // 6. Get or create category
+    const categoryId = await getOrCreateCategory(aiResult.category);
 
-    // 7. Get or create category
-    const categoryId = await getOrCreateCategory(seoMeta.category);
+    // 7. Ensure unique slug
+    const uniqueSlug = await ensureUniqueSlug(aiResult.slug);
 
-    // 8. Ensure unique slug
-    const uniqueSlug = await ensureUniqueSlug(seoMeta.slug);
-
-    // 9. Save to database
+    // 8. Save to database
     const article = await prisma.article.create({
       data: {
-        title: rewritten.title,
+        title: aiResult.title,
         slug: uniqueSlug,
-        excerpt: rewritten.excerpt,
-        content: rewritten.content,
+        excerpt: aiResult.excerpt,
+        content: aiResult.content,
         originalTitle: title,
         originalUrl: link,
         sourceHash: generateTitleHash(title),
-        metaTitle: seoMeta.metaTitle,
-        metaDescription: seoMeta.metaDescription,
-        keywords: seoMeta.keywords,
+        metaTitle: aiResult.metaTitle,
+        metaDescription: aiResult.metaDescription,
+        keywords: aiResult.keywords,
         thumbnailUrl,
         categoryId,
         status: "PUBLISHED",

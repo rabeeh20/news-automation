@@ -1,90 +1,51 @@
-// ─── Image Generation ────────────────────────────────
-// Gemini Imagen API for auto-generating article
-// thumbnail images. Saves to public/images/.
-
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import fs from "fs";
-import path from "path";
+// ─── Thumbnail Generator ─────────────────────────────
+// Category-based static thumbnails for articles.
+//
+// OPTIMIZED: Replaced Gemini Imagen API calls with
+// pre-generated category thumbnails. This eliminates
+// 1 API call per article (was using imagen-3.0-generate-002).
+//
+// Each category has a professionally designed thumbnail
+// stored in /public/images/categories/.
 
 function log(message: string): void {
   console.log(`[${new Date().toISOString()}] [ImageGen] ${message}`);
 }
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
 /**
- * Ensure the public/images directory exists
+ * Category → thumbnail mapping.
+ * All images are pre-generated and stored in public/images/categories/.
  */
-function ensureImageDir(): string {
-  const imageDir = path.join(process.cwd(), "public", "images");
-  if (!fs.existsSync(imageDir)) {
-    fs.mkdirSync(imageDir, { recursive: true });
-    log(`Created image directory: ${imageDir}`);
-  }
-  return imageDir;
-}
+const CATEGORY_THUMBNAILS: Record<string, string> = {
+  smartphones: "/images/categories/smartphones.png",
+  ai: "/images/categories/ai.png",
+  startups: "/images/categories/startups.png",
+  gadgets: "/images/categories/gadgets.png",
+  apps: "/images/categories/apps.png",
+  gaming: "/images/categories/gaming.png",
+};
+
+/** Default fallback thumbnail if category is unknown */
+const DEFAULT_THUMBNAIL = "/images/categories/gadgets.png";
 
 /**
- * Generate a thumbnail image for an article using Gemini Imagen.
+ * Get the thumbnail URL for an article based on its category.
  *
- * @param title - Article title (used to craft the image prompt)
- * @param slug - Article slug (used for the filename)
- * @returns URL path to the generated image (e.g., /images/my-article-slug.png)
+ * No API calls — instant, deterministic, and free.
+ *
+ * @param _title - Article title (unused, kept for API compatibility)
+ * @param _slug - Article slug (unused, kept for API compatibility)
+ * @param category - Article category slug (e.g., "smartphones", "ai")
+ * @returns URL path to the category thumbnail image
  */
 export async function generateThumbnail(
-  title: string,
-  slug: string
+  _title: string,
+  _slug: string,
+  category?: string
 ): Promise<string | null> {
-  log(`Generating thumbnail for: "${title}"`);
+  const cat = (category || "").toLowerCase();
+  const thumbnailUrl = CATEGORY_THUMBNAILS[cat] || DEFAULT_THUMBNAIL;
 
-  try {
-    const imageDir = ensureImageDir();
-    const filename = `${slug}.png`;
-    const filepath = path.join(imageDir, filename);
-
-    // Check if image already exists
-    if (fs.existsSync(filepath)) {
-      log(`⚡ Thumbnail already exists: ${filename}`);
-      return `/images/${filename}`;
-    }
-
-    // Use Gemini Imagen model for image generation
-    const model = genAI.getGenerativeModel({ model: "imagen-3.0-generate-002" });
-
-    const imagePrompt = `Create a modern, professional tech news article thumbnail image.
-Topic: ${title}
-Style: Clean, minimalist tech illustration with vibrant gradient colors.
-- Use a dark background with glowing accent elements
-- Include subtle tech-related visual elements (circuits, devices, data visualization)
-- Modern flat design aesthetic
-- No text in the image
-- Landscape orientation (16:9 ratio)
-- Professional quality suitable for a tech news website`;
-
-    const result = await model.generateContent(imagePrompt);
-    const response = result.response;
-
-    // Check if the response contains inline data (base64 image)
-    const candidates = response.candidates;
-    if (candidates && candidates.length > 0) {
-      const parts = candidates[0].content?.parts || [];
-      for (const part of parts) {
-        if (part.inlineData?.data) {
-          // Save base64 image to file
-          const buffer = Buffer.from(part.inlineData.data, "base64");
-          fs.writeFileSync(filepath, buffer);
-          log(`✅ Thumbnail saved: ${filename} (${(buffer.length / 1024).toFixed(1)} KB)`);
-          return `/images/${filename}`;
-        }
-      }
-    }
-
-    log(`⚠️ No image data in Gemini response, using placeholder`);
-    return null;
-  } catch (error) {
-    const errMsg = error instanceof Error ? error.message : String(error);
-    log(`❌ Image generation failed: ${errMsg}`);
-    // Non-fatal: return null and article will have no thumbnail
-    return null;
-  }
+  log(`📸 Assigned thumbnail for category "${cat || "unknown"}": ${thumbnailUrl}`);
+  return thumbnailUrl;
 }

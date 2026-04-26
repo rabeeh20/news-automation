@@ -54,19 +54,28 @@ export interface ArticleCreateInput {
 
 // ─── Gemini AI Types ────────────────────────────────
 
-export interface RewrittenArticle {
+/**
+ * Combined AI result — single Gemini call returns both
+ * the rewritten article content AND SEO metadata.
+ */
+export interface ArticleAIResult {
+  // Article content
   title: string;
   content: string;
   excerpt: string;
-}
-
-export interface SEOMetadata {
+  // SEO metadata
   metaTitle: string;
   metaDescription: string;
   keywords: string[];
   category: string;
   slug: string;
 }
+
+/** @deprecated Use ArticleAIResult instead */
+export type RewrittenArticle = Pick<ArticleAIResult, "title" | "content" | "excerpt">;
+
+/** @deprecated Use ArticleAIResult instead */
+export type SEOMetadata = Pick<ArticleAIResult, "metaTitle" | "metaDescription" | "keywords" | "category" | "slug">;
 
 // ─── RSS Feed Types ─────────────────────────────────
 
