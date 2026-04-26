@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════
    Prisom — Design System
    Global Styles + CSS Variables + Theme Tokens
+   Mobile-First, Premium & Classic Design
    ═══════════════════════════════════════════════════════ */
 
 /* ─── Google Fonts: Inter ─────────────────────────── */
@@ -13,16 +14,16 @@
     "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 
-  /* ── Font Sizes ── */
+  /* ── Font Sizes (Mobile-first base) ── */
   --text-xs: 0.75rem;     /* 12px */
-  --text-sm: 0.875rem;    /* 14px */
-  --text-base: 1rem;      /* 16px */
+  --text-sm: 0.8125rem;   /* 13px — slightly larger for mobile readability */
+  --text-base: 1rem;      /* 16px — minimum for mobile readability */
   --text-lg: 1.125rem;    /* 18px */
   --text-xl: 1.25rem;     /* 20px */
-  --text-2xl: 1.5rem;     /* 24px */
-  --text-3xl: 1.875rem;   /* 30px */
-  --text-4xl: 2.25rem;    /* 36px */
-  --text-5xl: 3rem;       /* 48px */
+  --text-2xl: 1.375rem;   /* 22px — mobile-optimised */
+  --text-3xl: 1.625rem;   /* 26px — mobile-optimised */
+  --text-4xl: 2rem;       /* 32px */
+  --text-5xl: 2.5rem;     /* 40px */
 
   /* ── Font Weights ── */
   --font-light: 300;
@@ -37,7 +38,7 @@
   --leading-snug: 1.375;
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
-  --leading-loose: 2;
+  --leading-loose: 1.8;
 
   /* ── Spacing Scale ── */
   --space-1: 0.25rem;     /* 4px */
@@ -87,8 +88,18 @@
   /* ── Layout ── */
   --container-max: 1280px;
   --container-narrow: 720px;
-  --header-height: 64px;
+  --header-height: 56px;
   --sidebar-width: 260px;
+
+  /* ── Touch Targets (min 44px for accessibility) ── */
+  --touch-min: 44px;
+  --touch-comfortable: 48px;
+
+  /* ── Safe Area Insets (for notched phones) ── */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 /* ─── Light Theme (Default) ──────────────────────── */
@@ -212,6 +223,8 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Prevent horizontal overflow on mobile */
+  overflow-x: hidden;
 }
 
 body {
@@ -225,6 +238,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-base),
     color var(--transition-base);
+  /* Prevent horizontal overflow on mobile */
+  overflow-x: hidden;
+  /* Smoother scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Padding for safe area (notched phones) */
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
 }
 
 /* ─── Typography ─────────────────────────────────── */
@@ -232,24 +252,32 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: var(--font-bold);
   line-height: var(--leading-tight);
   color: var(--color-text);
+  /* Prevent long words from overflowing on mobile */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-h1 { font-size: var(--text-4xl); }
-h2 { font-size: var(--text-3xl); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
-h5 { font-size: var(--text-lg); }
-h6 { font-size: var(--text-base); }
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+h5 { font-size: var(--text-base); }
+h6 { font-size: var(--text-sm); }
 
 p {
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
+  /* Prevent long words/URLs from overflowing on mobile */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 a {
   color: var(--color-text-link);
   text-decoration: none;
   transition: color var(--transition-fast);
+  /* Ensure links are easy to tap on mobile */
+  -webkit-tap-highlight-color: transparent;
 }
 
 a:hover {
@@ -276,12 +304,17 @@ button {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+  /* Disable tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+  /* Ensure min touch target */
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
 }
 
 /* ─── Inputs (base reset) ────────────────────────── */
 input, textarea, select {
   font-family: inherit;
-  font-size: inherit;
+  font-size: var(--text-base); /* Prevent iOS zoom on focus */
   color: inherit;
   background: transparent;
   border: 1px solid var(--color-border);
@@ -290,6 +323,9 @@ input, textarea, select {
   outline: none;
   transition: border-color var(--transition-fast),
     box-shadow var(--transition-fast);
+  /* Prevent iOS zoom */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input:focus, textarea:focus, select:focus {
@@ -304,6 +340,9 @@ code {
   background: var(--color-code-bg);
   padding: 0.125em 0.375em;
   border-radius: var(--radius-sm);
+  /* Prevent code blocks from breaking mobile layout */
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 pre {
@@ -313,6 +352,7 @@ pre {
   padding: var(--space-4);
   border-radius: var(--radius-lg);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ─── Selection ──────────────────────────────────── */
@@ -323,8 +363,8 @@ pre {
 
 /* ─── Scrollbar (Webkit) ─────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -396,45 +436,58 @@ pre {
   animation: fadeIn 0.4s ease-out forwards;
 }
 
-/* ─── Responsive Breakpoints ─────────────────────── */
-/* Mobile-first approach:
-   sm:  640px   — Small tablets
-   md:  768px   — Tablets
-   lg:  1024px  — Laptops / small desktops
-   xl:  1280px  — Large desktops
-   2xl: 1536px  — Ultra-wide screens
-
-   Usage in CSS Modules:
-   @media (min-width: 640px)  { ... }
-   @media (min-width: 768px)  { ... }
-   @media (min-width: 1024px) { ... }
-   @media (min-width: 1280px) { ... }
-   @media (min-width: 1536px) { ... }
-*/
-
-/* Mobile: stack everything, increase touch targets */
-@media (max-width: 639px) {
-  :root {
-    --text-4xl: 1.875rem;
-    --text-3xl: 1.5rem;
-    --text-2xl: 1.25rem;
-    --header-height: 56px;
-  }
-
-  .container {
-    padding-inline: var(--space-4);
-  }
+/* ─── Pull to Refresh Indicator (visual) ─────────── */
+@keyframes pullSpin {
+  to { transform: rotate(360deg); }
 }
 
-/* Tablet */
-@media (min-width: 640px) and (max-width: 1023px) {
+/* ═══════════════════════════════════════════════════════
+   Responsive Breakpoints — Mobile-First Approach
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Base: Mobile (< 640px) — Default styles above ── */
+
+/* ── Small tablets (640px+) ────────────────────────── */
+@media (min-width: 640px) {
+  :root {
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+  }
+
   .container {
     padding-inline: var(--space-6);
   }
 }
 
-/* Desktop */
+/* ── Tablets (768px+) ──────────────────────────────── */
+@media (min-width: 768px) {
+  :root {
+    --header-height: 64px;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+  }
+
+  .container {
+    padding-inline: var(--space-6);
+  }
+}
+
+/* ── Laptops / small desktops (1024px+) ────────────── */
 @media (min-width: 1024px) {
+  :root {
+    --text-3xl: 1.875rem;
+  }
+
+  h1 { font-size: var(--text-4xl); }
+  h2 { font-size: var(--text-3xl); }
+
+  .container {
+    padding-inline: var(--space-8);
+  }
+}
+
+/* ── Large desktops (1280px+) ──────────────────────── */
+@media (min-width: 1280px) {
   .container {
     padding-inline: var(--space-8);
   }

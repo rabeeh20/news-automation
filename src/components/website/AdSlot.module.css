@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════════════════
-   AdSlot Component Styles
+   AdSlot Component Styles — Mobile-First
+   Responsive ad containers optimised for mobile viewports
    ═══════════════════════════════════════════════════════ */
 
 .adSlot {
@@ -8,7 +9,7 @@
   justify-content: center;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  min-height: 90px;
+  min-height: 50px;
   transition: opacity var(--transition-base);
 }
 
@@ -22,11 +23,11 @@
   text-transform: uppercase;
 }
 
-/* Slot size variants */
+/* Slot size variants — Mobile defaults */
 .leaderboard {
   width: 100%;
-  max-width: 728px;
-  min-height: 90px;
+  max-width: 100%;
+  min-height: 50px;
   margin-inline: auto;
 }
 
@@ -38,30 +39,43 @@
 
 .inFeed {
   width: 100%;
-  min-height: 120px;
+  min-height: 100px;
   grid-column: 1 / -1;
 }
 
 .inArticle {
   width: 100%;
-  min-height: 200px;
-  margin: var(--space-6) 0;
+  min-height: 150px;
+  margin: var(--space-5) 0;
 }
 
 .sticky {
-  width: 100%;
-  max-width: 300px;
-  min-height: 600px;
+  display: none; /* Hidden on mobile */
 }
 
-/* Responsive: hide leaderboard on mobile, show rectangle instead */
-@media (max-width: 767px) {
+/* ─── Tablets and up ───────────────────── */
+@media (min-width: 768px) {
   .leaderboard {
-    max-width: 100%;
-    min-height: 50px;
+    max-width: 728px;
+    min-height: 90px;
   }
 
+  .inFeed {
+    min-height: 120px;
+  }
+
+  .inArticle {
+    min-height: 200px;
+    margin: var(--space-6) 0;
+  }
+}
+
+/* ─── Desktop ──────────────────────────── */
+@media (min-width: 1024px) {
   .sticky {
-    display: none;
+    display: flex;
+    width: 100%;
+    max-width: 300px;
+    min-height: 600px;
   }
 }

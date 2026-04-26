@@ -1,11 +1,13 @@
 /* ═══════════════════════════════════════════════════════
-   ShareButtons Component Styles
+   ShareButtons Component Styles — Mobile-First
+   Larger touch targets, native share integration ready
    ═══════════════════════════════════════════════════════ */
 
 .wrapper {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .label {
@@ -24,8 +26,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  /* Comfortable touch target on mobile */
+  width: var(--touch-comfortable);
+  height: var(--touch-comfortable);
   border-radius: var(--radius-full);
   font-size: var(--text-lg);
   cursor: pointer;
@@ -34,37 +37,54 @@
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text-secondary);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+/* Active state for touch */
+.btn:active {
+  transform: scale(0.92);
 }
 
-.btnTwitter:hover {
-  background: #1da1f2;
-  border-color: #1da1f2;
+/* Hover effects only for pointer devices */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btnTwitter:hover {
+    background: #1da1f2;
+    border-color: #1da1f2;
+    color: #fff;
+  }
+
+  .btnWhatsapp:hover {
+    background: #25d366;
+    border-color: #25d366;
+    color: #fff;
+  }
+
+  .btnCopy:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+
+  .btnLinkedin:hover {
+    background: #0077b5;
+    border-color: #0077b5;
+    color: #fff;
+  }
+}
+
+/* ─── Native Share Button (Mobile) ────── */
+.btnNative {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  border-color: transparent;
   color: #fff;
 }
 
-.btnWhatsapp:hover {
-  background: #25d366;
-  border-color: #25d366;
-  color: #fff;
-}
-
-.btnCopy:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-}
-
-.btnLinkedin:hover {
-  background: #0077b5;
-  border-color: #0077b5;
-  color: #fff;
-}
-
+/* ─── Tooltip ──────────────────────────── */
 .tooltip {
   position: relative;
 }
@@ -74,7 +94,7 @@
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
   font-size: var(--text-xs);
   color: #fff;
   background: var(--color-text);
@@ -87,4 +107,12 @@
 @keyframes fadeUp {
   from { opacity: 0; transform: translateX(-50%) translateY(4px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ─── Desktop: slightly smaller buttons ── */
+@media (min-width: 768px) {
+  .btn {
+    width: 40px;
+    height: 40px;
+  }
 }

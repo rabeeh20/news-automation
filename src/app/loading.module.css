@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════════════════
    Loading State Styles — Skeleton Screens
+   Mobile-First responsive loading states
    ═══════════════════════════════════════════════════════ */
 
 @keyframes shimmer {
@@ -8,7 +9,7 @@
 }
 
 .loadingPage {
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--space-8);
 }
 
 /* ─── Skeleton Base ───────────────────── */
@@ -36,12 +37,12 @@
 }
 
 .headerLogo {
-  width: 140px;
-  height: 28px;
+  width: 120px;
+  height: 24px;
 }
 
 .headerNav {
-  display: flex;
+  display: none; /* Hidden on mobile */
   gap: var(--space-3);
   margin-left: auto;
 }
@@ -56,18 +57,18 @@
 .heroSkeleton {
   max-width: var(--container-max);
   margin-inline: auto;
-  padding: var(--space-8) var(--space-4) var(--space-4);
+  padding: var(--space-6) var(--space-4) var(--space-3);
 }
 
 .heroTitle {
-  width: 60%;
-  height: 40px;
+  width: 70%;
+  height: 28px;
   margin-bottom: var(--space-3);
 }
 
 .heroSubtitle {
-  width: 40%;
-  height: 20px;
+  width: 50%;
+  height: 16px;
 }
 
 /* ─── Category Bar Skeleton ───────────── */
@@ -76,23 +77,25 @@
   margin-inline: auto;
   padding: var(--space-2) var(--space-4);
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  overflow: hidden;
 }
 
 .catItem {
   width: 80px;
-  height: 32px;
+  height: 36px;
   border-radius: var(--radius-full);
+  flex-shrink: 0;
 }
 
 /* ─── Article Grid Skeleton ───────────── */
 .gridSkeleton {
   max-width: var(--container-max);
   margin-inline: auto;
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-4) var(--space-4);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-6);
+  grid-template-columns: 1fr; /* Single column on mobile */
+  gap: var(--space-4);
 }
 
 .cardSkeleton {
@@ -108,11 +111,11 @@
 }
 
 .cardBody {
-  padding: var(--space-4);
+  padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
 .cardTitleLine {
-  height: 18px;
+  height: 16px;
   margin-bottom: var(--space-2);
 }
 
@@ -137,32 +140,32 @@
 }
 
 .cardMetaItem {
-  width: 80px;
-  height: 14px;
+  width: 70px;
+  height: 12px;
 }
 
 /* ─── Article Page Skeleton ───────────── */
 .articleSkeleton {
   max-width: var(--container-narrow);
   margin-inline: auto;
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-6) var(--space-4);
 }
 
 .articleBreadcrumb {
-  width: 200px;
-  height: 14px;
-  margin-bottom: var(--space-6);
+  width: 160px;
+  height: 12px;
+  margin-bottom: var(--space-4);
 }
 
 .articleCategory {
   width: 80px;
   height: 24px;
   border-radius: var(--radius-full);
-  margin: 0 auto var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .articleTitleSk {
-  height: 36px;
+  height: 28px;
   margin-bottom: var(--space-3);
 }
 
@@ -176,25 +179,24 @@
 
 .articleMetaSk {
   display: flex;
-  justify-content: center;
   gap: var(--space-4);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
 }
 
 .articleMetaItem {
-  width: 100px;
-  height: 16px;
+  width: 80px;
+  height: 14px;
 }
 
 .articleImage {
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius-xl);
-  margin-bottom: var(--space-8);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
 }
 
 .articleLine {
-  height: 16px;
+  height: 14px;
   margin-bottom: var(--space-3);
 }
 
@@ -207,12 +209,39 @@
 }
 
 /* ─── Responsive ──────────────────────── */
-@media (max-width: 639px) {
+@media (min-width: 640px) {
   .gridSkeleton {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
   }
 
+  .heroTitle {
+    height: 36px;
+  }
+}
+
+@media (min-width: 768px) {
   .headerNav {
-    display: none;
+    display: flex;
+  }
+
+  .heroSkeleton {
+    padding: var(--space-8) var(--space-6) var(--space-4);
+  }
+
+  .heroTitle {
+    height: 40px;
+  }
+
+  .gridSkeleton {
+    padding-inline: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .gridSkeleton {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    padding-inline: var(--space-8);
   }
 }

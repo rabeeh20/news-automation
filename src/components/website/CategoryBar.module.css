@@ -1,9 +1,10 @@
 /* ═══════════════════════════════════════════════════════
-   CategoryBar Component Styles
+   CategoryBar Component Styles — Mobile-First
+   Horizontally scrollable, thumb-friendly category chips
    ═══════════════════════════════════════════════════════ */
 
 .wrapper {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-5);
   overflow: hidden;
 }
 
@@ -12,8 +13,15 @@
   gap: var(--space-2);
   overflow-x: auto;
   padding-bottom: var(--space-2);
+  /* Hide scrollbar but keep functionality */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* Smooth momentum scroll on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Edge padding for first/last chip visibility */
+  scroll-padding-inline: var(--space-4);
+  /* Snap to chips for better UX */
+  scroll-snap-type: x proximity;
 }
 
 .scrollContainer::-webkit-scrollbar {
@@ -24,7 +32,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  /* Comfortable touch target */
   padding: var(--space-2) var(--space-4);
+  min-height: 40px;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: var(--color-text-secondary);
@@ -35,12 +45,22 @@
   white-space: nowrap;
   cursor: pointer;
   transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  /* Scroll snap alignment */
+  scroll-snap-align: start;
+  flex-shrink: 0;
 }
 
-.chip:hover {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
+@media (hover: hover) and (pointer: fine) {
+  .chip:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+  }
+}
+
+.chip:active {
+  transform: scale(0.96);
 }
 
 .chipActive {
@@ -57,4 +77,23 @@
 
 .chipIcon {
   font-size: var(--text-base);
+  line-height: 1;
+}
+
+/* ─── Responsive ───────────────────────── */
+@media (min-width: 768px) {
+  .wrapper {
+    margin-bottom: var(--space-6);
+  }
+
+  .chip {
+    min-height: 36px;
+    padding: var(--space-2) var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .wrapper {
+    margin-bottom: var(--space-8);
+  }
 }

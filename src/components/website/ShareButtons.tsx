@@ -32,10 +32,50 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
     }
   };
 
+  /**
+   * Use the native Web Share API on mobile devices for a native sharing UX.
+   * Falls back silently if the API is unavailable (desktop browsers).
+   */
+  const nativeShare = async () => {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        // User cancelled or share failed — do nothing
+      }
+    }
+  };
+
+  const hasNativeShare = typeof navigator !== "undefined" && !!navigator.share;
+
   return (
     <div className={styles.wrapper} id="share-buttons">
       <span className={styles.label}>Share:</span>
       <div className={styles.buttons}>
+        {/* Native Share (mobile only) */}
+        {hasNativeShare && (
+          <button
+            onClick={nativeShare}
+            className={`${styles.btn} ${styles.btnNative}`}
+            aria-label="Share"
+            title="Share"
+          >
+            📤
+          </button>
+        )}
+
+        {/* WhatsApp — most popular on mobile in India */}
+        <a
+          href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${styles.btn} ${styles.btnWhatsapp}`}
+          aria-label="Share on WhatsApp"
+          title="Share on WhatsApp"
+        >
+          💬
+        </a>
+
         {/* Twitter/X */}
         <a
           href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
@@ -46,18 +86,6 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
           title="Share on Twitter"
         >
           𝕏
-        </a>
-
-        {/* WhatsApp */}
-        <a
-          href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${styles.btn} ${styles.btnWhatsapp}`}
-          aria-label="Share on WhatsApp"
-          title="Share on WhatsApp"
-        >
-          💬
         </a>
 
         {/* LinkedIn */}

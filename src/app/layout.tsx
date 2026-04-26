@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/website/ThemeProvider";
 import "./globals.css";
@@ -10,6 +10,19 @@ const inter = Inter({
   variable: "--font-sans",
   weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
+
+/* ─── Viewport Configuration (Mobile-Optimised) ──── */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover", /* Support for notched phones (iPhone X+) */
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0f1a" },
+  ],
+};
 
 /* ─── Root Metadata ──────────────────────────────── */
 export const metadata: Metadata = {
@@ -68,6 +81,17 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
     apple: "/favicon.ico",
+  },
+  /* ─── Mobile Web App Meta ────────────── */
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Prisom",
+  },
+  formatDetection: {
+    telephone: true,
+    email: true,
+    address: false,
   },
   category: "technology",
 };
